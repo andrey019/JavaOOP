@@ -1,6 +1,8 @@
+package ClassWork.Lesson3;
+
 import java.io.File;
 import java.io.IOException;
-public class Main {
+class Main {
     private static void test() {
         try {
             File f = File.createTempFile("1B", "DEF");
