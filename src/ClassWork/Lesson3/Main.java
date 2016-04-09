@@ -1,10 +1,17 @@
-package ClassWork.Lesson3;
-
-/**
- * Created by Лена on 09.04.2016.
- */
+import java.io.File;
+import java.io.IOException;
 public class Main {
-    public static void main(String[] args){
-        System.out.print("sdfs");
+    private static void test() {
+        try {
+            File f = File.createTempFile("1B", "DEF");
+            System.out.println(f.getCanonicalPath());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    public static void main(String[] args) {
+        test();
     }
 }
