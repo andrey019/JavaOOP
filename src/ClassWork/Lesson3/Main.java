@@ -2,6 +2,7 @@ package ClassWork.Lesson3;
 
 import java.io.File;
 import java.io.IOException;
+
 class Main {
     private static void test() {
         try {
