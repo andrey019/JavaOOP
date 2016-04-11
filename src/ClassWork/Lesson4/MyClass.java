@@ -97,7 +97,7 @@ public class MyClass {
 	   System.out.println("Car color: " + c.getColor());
 	   
 	   Hamburger h = new Hamburger();
-	   c = (Colored)h; // ClassCastException !!!
+//	   c = (Colored)h; // ClassCastException !!!
 	   System.out.println("Humburger color: " + c.getColor());
    }
 }
