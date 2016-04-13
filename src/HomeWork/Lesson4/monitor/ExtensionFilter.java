@@ -10,18 +10,9 @@ class ExtensionFilter implements FilenameFilter {
     private String extension;
     private String type;
 
-    public ExtensionFilter(){
-        this.extension = "";
-    }
-
     public ExtensionFilter(String extension){
         this.extension = "." + extension;
         this.type = extension;
-    }
-
-    @Override
-    public String toString(){
-        return type;
     }
 
     @Override
