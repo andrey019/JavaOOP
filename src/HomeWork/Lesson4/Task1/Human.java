@@ -3,14 +3,17 @@ package HomeWork.Lesson4.Task1;
 /**
  * Created by Лена on 09.04.2016.
  */
-public class Human implements Comparable {
+class Human implements Comparable {
     private int age;
+
     public Human(int age) {
         this.age = age;
     }
+
     public int getAge() {
         return age;
     }
+
     @Override
     public int compareTo(Object another) {
         Human h = (Human) another;
