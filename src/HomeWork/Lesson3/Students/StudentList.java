@@ -32,6 +32,7 @@ class StudentList {
             System.arraycopy(list, (index + 1), temparr, (index + 1), (list.length - index - 2));
             list = temparr;
             p--;
+			return true;
         } else if (index >= p) throw new AddException("Out of boundaries!");
         return false;
     }
