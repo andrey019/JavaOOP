@@ -5,16 +5,16 @@ import java.io.RandomAccessFile;
 
 
 class FilesCopy {
-    static void copyFiles (String src, String to) {
+    static void copyAll (String src, String to) {
         new File(to).mkdir();
         File catalogue = new File(src);
         File[] files = catalogue.listFiles();
         for (File f : files) {
             try {
                 if (f.isFile()) {
-                    copy(f.getCanonicalPath(), to + "\\" + f.getName());
+                    copyFile(f.getCanonicalPath(), to + "\\" + f.getName());
                 } else {
-                    copyFiles(f.getCanonicalPath(), to + "\\" + f.getName());
+                    copyAll(f.getCanonicalPath(), to + "\\" + f.getName());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -22,7 +22,7 @@ class FilesCopy {
         }
     }
 
-    private static void copy(String src, String to) {
+    private static void copyFile(String src, String to) {
         try {
             RandomAccessFile in = new RandomAccessFile(src, "r");
             try {
@@ -48,6 +48,6 @@ class FilesCopy {
     }
 
     public static void main(String[] args) {
-        copyFiles("c:\\test", "c:\\testo");
+        copyAll("c:\\test", "c:\\testo");
     }
 }
