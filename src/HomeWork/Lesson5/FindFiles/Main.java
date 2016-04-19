@@ -1,4 +1,4 @@
-package ClassWork.Lesson5.FindFiles;
+package HomeWork.Lesson5.FindFiles;
 
 import java.io.File;
 import java.io.FilenameFilter;
