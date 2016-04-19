@@ -6,7 +6,10 @@ import java.io.RandomAccessFile;
 
 class FilesCopy {
     static void copyAll (String src, String to) {
-        new File(to).mkdir();
+        File dir = new File(to);
+        if (dir.exists()) {
+            dir.mkdir();
+        }
         File catalogue = new File(src);
         File[] files = catalogue.listFiles();
         for (File f : files) {
