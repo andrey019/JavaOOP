@@ -22,7 +22,6 @@ class Time extends Thread {
         Time time = new Time();
         System.out.println("Type in 'q' to quit");
         time.start();
-        scanner.next();
         while (scanner.nextLine().equalsIgnoreCase("q"));
         time.running = false;
     }
