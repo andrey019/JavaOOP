@@ -38,7 +38,7 @@ class Main {
     }
 
     public static void main(String[] args) {
-        Task t = new Task(new BigInteger("100"), new Finish());
+        Task t = new Task(new BigInteger("5"), new Finish());
         t.start();
         System.out.println("Done!");
     }

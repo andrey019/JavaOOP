@@ -1,8 +1,6 @@
-package ClassWork.Lesson6.Counter;
+package HomeWork.Lesson6.Counter;
 
-/**
- * Created by Лена on 16.04.2016.
- */
+
 class Counter extends Thread {
     private int start;
     private int end;

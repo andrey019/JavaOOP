@@ -2,9 +2,7 @@ package HomeWork.Lesson6.Task3;
 
 import java.util.ArrayList;
 
-/**
- * Created by Лена on 16.04.2016.
- */
+
 class MyThread extends Thread {
     public MyThread(String name) {
         super();
