@@ -1,6 +1,7 @@
 package HomeWork.Lesson6.Task6;
 
 import java.io.RandomAccessFile;
+import java.util.Date;
 
 
 class Copy implements Runnable {
@@ -27,6 +28,7 @@ class Copy implements Runnable {
             RandomAccessFile in = new RandomAccessFile(src, "r");
             try {
                 RandomAccessFile out = new RandomAccessFile(to, "rw");
+                long start = new Date().getTime();
                 try {
                     long onePercent = in.length() / 100;
                     long progressRaw = 0;
@@ -42,6 +44,8 @@ class Copy implements Runnable {
                     } while (count > 0);
                 } finally {
                     out.close();
+                    long end = new Date().getTime();
+                    copyProgress.setTime( ((double) (end - start)) / 1000 );
                 }
             } finally {
                 in.close();

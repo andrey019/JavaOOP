@@ -1,9 +1,12 @@
 package HomeWork.Lesson6.Task6;
 
 
+import java.util.Date;
+
 class CopyProgress implements Runnable {
     private int currentProgress = 0;
     private int oldProgress = 0;
+    private double time = -1;
     private boolean stop = false;
 
     @Override
@@ -24,7 +27,8 @@ class CopyProgress implements Runnable {
                 e.printStackTrace();
             }
         }
-        System.out.println("Copying is completed");
+        while (time == -1) {}
+        System.out.println("Copying is completed in " + time + " seconds");
     }
 
     public void setCurrentProgress(int currentProgress) {
@@ -33,5 +37,9 @@ class CopyProgress implements Runnable {
 
     public void setStop(boolean stop) {
         this.stop = stop;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
     }
 }
