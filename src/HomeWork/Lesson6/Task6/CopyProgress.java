@@ -1,8 +1,6 @@
 package HomeWork.Lesson6.Task6;
 
 
-import java.util.Date;
-
 class CopyProgress implements Runnable {
     private int currentProgress = 0;
     private int oldProgress = 0;
