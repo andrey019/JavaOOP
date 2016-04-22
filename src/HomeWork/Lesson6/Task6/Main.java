@@ -8,6 +8,6 @@ class Main {
     }
 
     public static void main(String[] args) {
-        copyFile("c:\\test\\jdk.exe", "c:\\test\\jdk_copy.exe");
+        copyFile("c:\\razved.mp4", "c:\\razved_copy.mp4");
     }
 }

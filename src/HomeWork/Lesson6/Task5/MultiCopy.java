@@ -6,14 +6,15 @@ import java.io.RandomAccessFile;
 class MultiCopy implements Runnable {
     private long position;
     private int blockSize;
+    private static final int BUFFER_SIZE = 1024;
     private RandomAccessFile in;
     private RandomAccessFile out;
-    private ConsoleMessages consoleMessages;
+    private CopyProgress copyProgress;
 
-    public MultiCopy(String src, String to, long position, int blockSize, ConsoleMessages consoleMessages) {
+    public MultiCopy(String src, String to, long position, int blockSize, CopyProgress copyProgress) {
         this.position = position;
         this.blockSize = blockSize;
-        this.consoleMessages = consoleMessages;
+        this.copyProgress = copyProgress;
         try {
             this.in = new RandomAccessFile(src, "r");
             this.out = new RandomAccessFile(to, "rw");
@@ -31,12 +32,20 @@ class MultiCopy implements Runnable {
         try {
             in.seek(position);
             out.seek(position);
+            int copyCount = blockSize / BUFFER_SIZE;
+            int lastBufSize = BUFFER_SIZE - (blockSize - (copyCount * BUFFER_SIZE));
             byte[] buf = new byte[blockSize];
-            in.read(buf, 0, blockSize);
-            out.write(buf, 0, blockSize);
+            for (int i = 0; i < copyCount; i++) {
+                in.read(buf, 0, BUFFER_SIZE);
+                out.write(buf, 0, BUFFER_SIZE);
+                copyProgress.addDoneBytes(BUFFER_SIZE);
+            }
+            in.read(buf, 0, lastBufSize);
+            out.write(buf, 0, lastBufSize);
+            copyProgress.addDoneBytes(lastBufSize);
+            copyProgress.threadDone();
             in.close();
             out.close();
-            consoleMessages.threadDone();
         } catch (Exception e) {
             e.printStackTrace();
         }

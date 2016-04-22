@@ -26,16 +26,16 @@ class Main {
 
     private static ArrayList<Thread> createThreads(String src, String to, long fileLength, int threadsAmount) {
         ArrayList<Thread> threads = new ArrayList<>();
-        ConsoleMessages consoleMessages = new ConsoleMessages(threadsAmount);
-        new Thread(consoleMessages).start();
+        CopyProgress copyProgress = new CopyProgress(fileLength, threadsAmount);
+        new Thread(copyProgress).start();
         long position = 0;
         int blockSize = (int) (fileLength / threadsAmount);
         int lastBlockSize = (int) ( blockSize + (fileLength - (blockSize * threadsAmount)) );
         for (int i = 0; i < threadsAmount - 1; i++) {
-            threads.add(new Thread(new MultiCopy(src, to, position, blockSize, consoleMessages)));
+            threads.add(new Thread(new MultiCopy(src, to, position, blockSize, copyProgress)));
             position += blockSize;
         }
-        threads.add(new Thread(new MultiCopy(src, to, position, lastBlockSize, consoleMessages)));
+        threads.add(new Thread(new MultiCopy(src, to, position, lastBlockSize, copyProgress)));
         return threads;
     }
 
@@ -46,6 +46,6 @@ class Main {
     }
 
     public static void main(String[] args) {
-        copyFile("c:\\test\\jdk.exe", "c:\\test\\jdk_copy.exe", 30);
+        copyFile("c:\\razved.mp4", "c:\\razved_copy.mp4", 100);
     }
 }
