@@ -24,7 +24,7 @@ class Main {
         }
     }
 
-    static ArrayList<Thread> createThreads(String src, String to, long fileLength, int threadsAmount) {
+    private static ArrayList<Thread> createThreads(String src, String to, long fileLength, int threadsAmount) {
         ArrayList<Thread> threads = new ArrayList<>();
         ConsoleMessages consoleMessages = new ConsoleMessages(threadsAmount);
         new Thread(consoleMessages).start();
@@ -39,7 +39,7 @@ class Main {
         return threads;
     }
 
-    static void startThreads(ArrayList<Thread> threads) {
+    private static void startThreads(ArrayList<Thread> threads) {
         for (Thread thread : threads) {
             thread.start();
         }
