@@ -46,6 +46,6 @@ class Main {
     }
 
     public static void main(String[] args) {
-        copyFile("c:\\razved.mp4", "c:\\razved_copy.mp4", 100);
+        copyFile("c:\\razved.mp4", "c:\\test\\razved.mp4", 25);
     }
 }
