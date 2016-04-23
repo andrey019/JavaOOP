@@ -3,13 +3,12 @@ package HomeWork.Lesson6.Task5;
 
 class CopyProgress implements Runnable {
     private long doneBytes = 0;
+    private long allBytes;
     private int onePercent;
-    private int threadsAmount;
-    private int doneThreadsAmount = 0;
 
-    public CopyProgress(long allBytes, int threadsAmount) {
+    public CopyProgress(long allBytes) {
         this.onePercent = (int) (allBytes / 100);
-        this.threadsAmount = threadsAmount;
+        this.allBytes = allBytes;
     }
 
     @Override
@@ -21,7 +20,7 @@ class CopyProgress implements Runnable {
         int currentProgress = 0;
         int oldProgress = 0;
         System.out.println("Copying...");
-        while (threadsAmount != doneThreadsAmount) {
+        while (allBytes != doneBytes) {
             currentProgress = (int) (doneBytes / onePercent);
             if (currentProgress != oldProgress) {
                 System.out.println(currentProgress + "% is completed");
@@ -36,11 +35,7 @@ class CopyProgress implements Runnable {
         System.out.println("Done!");
     }
 
-    void addDoneBytes(int doneBytes) {
+    synchronized void addDoneBytes(int doneBytes) {
         this.doneBytes += doneBytes;
-    }
-
-    void threadDone() {
-        doneThreadsAmount++;
     }
 }

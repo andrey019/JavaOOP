@@ -33,7 +33,7 @@ class MultiCopy implements Runnable {
             in.seek(position);
             out.seek(position);
             int copyCount = blockSize / BUFFER_SIZE;
-            int lastBufSize = BUFFER_SIZE - (blockSize - (copyCount * BUFFER_SIZE));
+            int lastBufSize = (blockSize - (copyCount * BUFFER_SIZE));
             byte[] buf = new byte[blockSize];
             for (int i = 0; i < copyCount; i++) {
                 in.read(buf, 0, BUFFER_SIZE);
@@ -43,7 +43,6 @@ class MultiCopy implements Runnable {
             in.read(buf, 0, lastBufSize);
             out.write(buf, 0, lastBufSize);
             copyProgress.addDoneBytes(lastBufSize);
-            copyProgress.threadDone();
             in.close();
             out.close();
         } catch (Exception e) {

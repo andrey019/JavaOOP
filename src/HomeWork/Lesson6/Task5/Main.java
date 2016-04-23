@@ -26,7 +26,7 @@ class Main {
 
     private static ArrayList<Thread> createThreads(String src, String to, long fileLength, int threadsAmount) {
         ArrayList<Thread> threads = new ArrayList<>();
-        CopyProgress copyProgress = new CopyProgress(fileLength, threadsAmount);
+        CopyProgress copyProgress = new CopyProgress(fileLength);
         new Thread(copyProgress).start();
         long position = 0;
         int blockSize = (int) (fileLength / threadsAmount);
@@ -46,6 +46,6 @@ class Main {
     }
 
     public static void main(String[] args) {
-        copyFile("c:\\razved.mp4", "c:\\test\\razved.mp4", 25);
+        copyFile("c:\\razved.mp4", "c:\\razved_copy.mp4", 11);
     }
 }
