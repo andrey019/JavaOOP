@@ -25,19 +25,15 @@ class main {
 
     private static ArrayList<ArraySum> createThreads(int[] intArray, int threadsAmount, CountDownLatch countDownLatch) {
         ArrayList<ArraySum> threads = new ArrayList<>();
-        int threadArrayCapacity = intArray.length / threadsAmount;
-        int lastThreadArrayCapacity = threadArrayCapacity + (intArray.length - (threadArrayCapacity * threadsAmount));
+        int threadArraySize = intArray.length / threadsAmount;
+        int lastThreadArraySize = threadArraySize + (intArray.length - (threadArraySize * threadsAmount));
         if (threadsAmount > 1) {
             for (int i = 0; i < threadsAmount - 1; i++) {
-                int[] threadArray = new int[threadArrayCapacity];
-                System.arraycopy(intArray, threadArrayCapacity * i, threadArray, 0, threadArrayCapacity);
-                threads.add(new ArraySum(threadArray, countDownLatch));
+                threads.add(new ArraySum(intArray, threadArraySize * i, threadArraySize * (i + 1), countDownLatch));
             }
-            int[] threadArray = new int[lastThreadArrayCapacity];
-            System.arraycopy(intArray, threadArrayCapacity * (threadsAmount - 1), threadArray, 0, lastThreadArrayCapacity);
-            threads.add(new ArraySum(threadArray, countDownLatch));
+            threads.add(new ArraySum(intArray, threadArraySize * (threadsAmount - 1), intArray.length, countDownLatch));
         } else {
-            threads.add(new ArraySum(intArray, countDownLatch));
+            threads.add(new ArraySum(intArray, 0, intArray.length, countDownLatch));
         }
 
         return threads;
@@ -60,9 +56,13 @@ class main {
     }
 
     public static void main(String[] args) {
-        long startTime = new Date().getTime();
-        long arraySum = arraySum(25000000, 1);
-        double spentTime = (double)(new Date().getTime() - startTime) / 1000;
+        long startTime = System.currentTimeMillis();
+        long arraySum = arraySum(200000000, 8);
+        double spentTime = (double)(System.currentTimeMillis() - startTime) / 1000;
+        System.out.println("Result = " + arraySum + "; time spent = " + spentTime + " seconds");
+        startTime = System.currentTimeMillis();
+        arraySum = arraySum(200000000, 1);
+        spentTime = (double)(System.currentTimeMillis() - startTime) / 1000;
         System.out.println("Result = " + arraySum + "; time spent = " + spentTime + " seconds");
     }
 }
