@@ -3,7 +3,6 @@ package HomeWork.Lesson7.Task0;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
