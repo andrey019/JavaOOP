@@ -131,3 +131,8 @@ class MatrixMain {
         System.out.println("Multi thread time: " + (System.currentTimeMillis() - startTime));
     }
 }
+
+//Preparing time: 3214
+//Single thread time: 6049
+//Multi thread time: 2286
+
