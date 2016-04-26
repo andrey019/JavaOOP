@@ -114,16 +114,18 @@ class MatrixMain {
     }
 
     public static void main(String[] args) {
+        long startTime = System.currentTimeMillis();
         int size = 4000;
         matrixAA = createMatrix(size);
         matrixBB = createMatrix(size);
+        System.out.println("Preparing time: " + (System.currentTimeMillis() - startTime));
 
-        long startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         calculateSingle(size);
-        System.out.println(System.currentTimeMillis() - startTime);
+        System.out.println("Single thread time: " + (System.currentTimeMillis() - startTime));
         startTime = System.currentTimeMillis();
         calculateMulty(size);
-        System.out.println(System.currentTimeMillis() - startTime);
+        System.out.println("Multi thread time: " + (System.currentTimeMillis() - startTime));
 
     }
 }
