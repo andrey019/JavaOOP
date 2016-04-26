@@ -43,18 +43,14 @@ class MatrixMain {
         matrixA = matrixAA;
         matrixB = matrixBB;
         ArrayList<MultyThreadMatrix> multy = new ArrayList<>();
-        ArrayList<Thread> multyThreads = new ArrayList<>();
         try {
             for (int i = 0; i < 4; i++) {
                 multy.add(new MultyThreadMatrix(matrixA, matrixB, i + 1, countDownLatch));
-                multyThreads.add(new Thread(multy.get(i)));
+                multy.get(i).start();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (MatrixException e) {
+            e.getMessage();
             System.exit(-1);
-        }
-        for (Thread thread : multyThreads) {
-            thread.start();
         }
         try {
             countDownLatch.await();
@@ -78,26 +74,33 @@ class MatrixMain {
                 true, countDownLatch);
         MultyThreadColsRows multyCols = new MultyThreadColsRows(colQuad1, colQuad2, colQuad3, colQuad4,
                 true, countDownLatch);
-        Thread multyRowsThread = new Thread(multyRows);
-        Thread multyColsThread = new Thread(multyCols);
-        multyRowsThread.start();
-        multyColsThread.start();
+        multyRows.start();
+        multyCols.start();
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return getMatrixResult(multyRows, multyCols, size);
+        return getMatrixResult(multyRows.getResult(), multyCols.getResult(), size);
     }
 
-    private static int[][] getMatrixResult(MultyThreadColsRows multyRows, MultyThreadColsRows multyCols, int size) {
+    private static int[][] getMatrixResult(int[] rows, int[] cols, int size) {
+        CountDownLatch countDownLatch = new CountDownLatch(4);
         int[][] matrixResult = new int[size][size];
-        int[] rows = multyRows.getResult();
-        int[] cols = multyCols.getResult();
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                matrixResult[j][i] = rows[i] + cols[j];
+        ArrayList<MultyThreadFinal> multyFinals = new ArrayList<>();
+        try {
+            for (int i = 0; i < 4; i++) {
+                multyFinals.add(new MultyThreadFinal(matrixResult, rows, cols, i + 1, countDownLatch));
+                multyFinals.get(i).start();
             }
+        } catch (MatrixException e) {
+            e.getMessage();
+            System.exit(-1);
+        }
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return matrixResult;
     }
@@ -115,7 +118,7 @@ class MatrixMain {
 
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
-        int size = 4000;
+        int size = 11000;
         matrixAA = createMatrix(size);
         matrixBB = createMatrix(size);
         System.out.println("Preparing time: " + (System.currentTimeMillis() - startTime));
@@ -126,6 +129,5 @@ class MatrixMain {
         startTime = System.currentTimeMillis();
         calculateMulty(size);
         System.out.println("Multi thread time: " + (System.currentTimeMillis() - startTime));
-
     }
 }

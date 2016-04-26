@@ -2,7 +2,7 @@ package HomeWork.Lesson7.Task3;
 
 import java.util.concurrent.CountDownLatch;
 
-class MultyThreadColsRows implements Runnable {
+class MultyThreadColsRows extends Thread {
     private int[] quad1;
     private int[] quad2;
     private int[] quad3;

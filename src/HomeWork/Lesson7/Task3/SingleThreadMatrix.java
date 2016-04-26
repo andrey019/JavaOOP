@@ -2,7 +2,7 @@ package HomeWork.Lesson7.Task3;
 
 import java.util.concurrent.CountDownLatch;
 
-class SingleThreadMatrix implements Runnable {
+class SingleThreadMatrix extends Thread {
     private int[][] matrixA;
     private int[][] matrixB;
     private int[][] matrixResult;

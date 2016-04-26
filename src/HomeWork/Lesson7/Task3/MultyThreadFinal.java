@@ -2,27 +2,24 @@ package HomeWork.Lesson7.Task3;
 
 import java.util.concurrent.CountDownLatch;
 
-class MultyThreadMatrix extends Thread {
-    private int[][] matrixA;
-    private int[][] matrixB;
-    private int[] rowsResult;
-    private int[] colsResult;
+class MultyThreadFinal extends Thread {
     private int startRow;
-    private int endRow;
     private int startCol;
+    private int endRow;
     private int endCol;
+    private int[] rows;
+    private int[] cols;
+    private int[][] matrixResult;
     private CountDownLatch countDownLatch;
 
-    public MultyThreadMatrix(int[][] matrixA, int[][] matrixB, int quadrant,
-                             CountDownLatch countDownLatch) throws MatrixException {
+    public MultyThreadFinal(int[][] matrixResult, int[] rows, int[] cols, int quadrant,
+                            CountDownLatch countDownLatch) throws MatrixException {
 
-        int length = matrixA.length;
-        this.matrixA = matrixA;
-        this.matrixB = matrixB;
-        this.rowsResult = new int[length / 2];
-        this.colsResult = new int[length / 2];
+        this.matrixResult = matrixResult;
+        this.rows = rows;
+        this.cols = cols;
         this.countDownLatch = countDownLatch;
-        quadrantStartEnd(quadrant, length);
+        quadrantStartEnd(quadrant, rows.length);
     }
 
     private void quadrantStartEnd(int quadrant, int length) throws MatrixException {
@@ -57,19 +54,10 @@ class MultyThreadMatrix extends Thread {
     }
 
     private void calculate() {
-        int rowTemp = 1;
-        int colTemp = 1;
-        int j = 0;
         for (int i = startRow; i < endRow; i++) {
-            for (int m = startCol; m < endCol; m++) {
-                rowTemp *= matrixA[m][i];
-                colTemp *= matrixB[i][m];
+            for (int j = startCol; j < endCol; j++) {
+                matrixResult[j][i] = rows[i] + cols[j];
             }
-            rowsResult[j] = rowTemp;
-            colsResult[j] = colTemp;
-            j++;
-            rowTemp = 1;
-            colTemp = 1;
         }
     }
 
@@ -77,13 +65,5 @@ class MultyThreadMatrix extends Thread {
     public void run() {
         calculate();
         countDownLatch.countDown();
-    }
-
-    public int[] getRowsResult() {
-        return rowsResult;
-    }
-
-    public int[] getColsResult() {
-        return colsResult;
     }
 }
