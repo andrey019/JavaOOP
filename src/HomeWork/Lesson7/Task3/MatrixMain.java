@@ -5,9 +5,6 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 class MatrixMain {
-    static int[][] matrixAA;
-    static int[][] matrixBB;
-
     private static int[][] createMatrix(int size) {
         Random random = new Random();
         int[][] matrix = new int[size][size];
@@ -19,12 +16,8 @@ class MatrixMain {
         return matrix;
     }
 
-    private static int[][] calculateSingle(int size) {
+    private static int[][] calculateSingle(int[][] matrixA, int[][] matrixB) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        int[][] matrixA;
-        int[][] matrixB;
-        matrixA = matrixAA;
-        matrixB = matrixBB;
         SingleThreadMatrix single = new SingleThreadMatrix(matrixA, matrixB, countDownLatch);
         Thread singleThread = new Thread(single);
         singleThread.start();
@@ -36,12 +29,9 @@ class MatrixMain {
         return single.getMatrixResult();
     }
 
-    private static int[][] calculateMulty(int size) {
+    private static int[][] calculateMulty(int[][] matrixA, int[][] matrixB) {
         CountDownLatch countDownLatch = new CountDownLatch(4);
-        int[][] matrixA;
-        int[][] matrixB;
-        matrixA = matrixAA;
-        matrixB = matrixBB;
+        int size = matrixA.length;
         ArrayList<MultyThreadMatrix> multy = new ArrayList<>();
         try {
             for (int i = 0; i < 4; i++) {
@@ -119,20 +109,19 @@ class MatrixMain {
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
         int size = 11000;
-        matrixAA = createMatrix(size);
-        matrixBB = createMatrix(size);
+        int[][] matrixA = createMatrix(size);
+        int[][] matrixB = createMatrix(size);
         System.out.println("Preparing time: " + (System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();
-        calculateSingle(size);
+        calculateSingle(matrixA, matrixB);
         System.out.println("Single thread time: " + (System.currentTimeMillis() - startTime));
         startTime = System.currentTimeMillis();
-        calculateMulty(size);
+        calculateMulty(matrixA, matrixB);
         System.out.println("Multi thread time: " + (System.currentTimeMillis() - startTime));
     }
 }
 
-//Preparing time: 3214
-//Single thread time: 6049
-//Multi thread time: 2286
-
+// Preparing time: 3142
+// Single thread time: 5569
+// Multi thread time: 1940
