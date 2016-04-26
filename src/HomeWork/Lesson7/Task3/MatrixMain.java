@@ -122,6 +122,6 @@ class MatrixMain {
     }
 }
 
-// Preparing time: 3142
-// Single thread time: 5569
-// Multi thread time: 1940
+// Preparing time: 3302
+// Single thread time: 6142
+// Multi thread time: 1836
