@@ -4,15 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 class ArrayToList {
-    private static ArrayList intArrayToList(int[] array) {          // task 1
-        ArrayList intArray = new ArrayList();
-        for (int i = 0, length = array.length; i < length; i++) {
-            intArray.add(array[i]);
-        }
-        return intArray;
-    }
-
-    private static ArrayList stringArrayToList(String[] array) {    // task 1
+    private static <E> ArrayList arrayToList(E[] array) {    // task 1
         ArrayList intArray = new ArrayList();
         for (int i = 0, length = array.length; i < length; i++) {
             intArray.add(array[i]);
@@ -33,7 +25,7 @@ class ArrayToList {
 
     public static void main(String[] args) {
         int length = 10;
-        int[] intArray = new int[length];
+        Integer[] intArray = new Integer[length];
         String[] strArray = new String[length];
         Random random = new Random();
         for (int i = 0; i < length; i++) {
@@ -42,8 +34,8 @@ class ArrayToList {
             System.out.print(intArray[i] + " ");
         }
         System.out.println();
-        ArrayList list = intArrayToList(intArray);
-        ArrayList list1 = stringArrayToList(strArray);
+        ArrayList list = arrayToList(intArray);
+        ArrayList list1 = arrayToList(strArray);
         System.out.println(list.toString());
 
         ArrayList list2 = makeListDeleteElements();
