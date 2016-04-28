@@ -6,23 +6,25 @@ import java.util.ArrayList;
 
 class Monitor extends Thread {
     private String path;
-    ArrayList<File> newDataBase = new ArrayList<>();
-    ArrayList<File> oldDataBase = new ArrayList<>();
-
+    ArrayList<File> newFiles = new ArrayList<>();
+    ArrayList<File> oldFiles = new ArrayList<>();
+    ArrayList<Long> newTimings = new ArrayList<>();
+    ArrayList<Long> oldTimings = new ArrayList<>();
 
     public Monitor(String path) {
         this.path = path;
-        oldDataBaseFill(path);
+        oldFill(path);
     }
 
-    private void oldDataBaseFill(String path) {
+    private void oldFill(String path) {
         try {
             File src = new File(path);
             File[] allFiles = src.listFiles();
             for (File f : allFiles) {
-                oldDataBase.add(f);
+                oldFiles.add(f);
+                oldTimings.add(f.lastModified());
                 if (!f.isFile()) {
-                    oldDataBaseFill(f.getCanonicalPath());
+                    oldFill(f.getCanonicalPath());
                 }
             }
         } catch (Exception e) {
@@ -30,81 +32,59 @@ class Monitor extends Thread {
         }
     }
 
-    private void checkDeleted() {
-        try {
-            for (int i = 0; i < oldDataBase.size(); i++) {
-                if (!newDataBase.contains(oldDataBase.get(i))) {
-                    System.out.println(oldDataBase.get(i).getCanonicalPath() + " has been deleted");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-//    void fillDataBase(String path) {
-//        try {
-//            File src = new File(path);
-//            File[] allFiles = src.listFiles();
-//            for (int i = 0; i < allFiles.length; i++) {
-//                if (allFiles[i].isFile()) {
-//                    dataBase.add(allFiles[i].lastModified());
-//                } else {
-//                    fillDataBase(allFiles[i].getCanonicalPath());
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     void monitoring(String path) {
         try {
             File src = new File(path);
             File[] allFiles = src.listFiles();
             for (File f : allFiles) {
-                newDataBase.add(f);
+                newFiles.add(f);
+                newTimings.add(f.lastModified());
                 if (f.isFile()) {
-                    int oldFileIndex = oldDataBase.indexOf(f);
+                    int oldFileIndex = oldFiles.indexOf(f);
                     if (oldFileIndex != -1) {
-                        if (oldDataBase.get(oldFileIndex).lastModified() != f.lastModified()) {
+                        long old = oldFiles.get(oldFileIndex).lastModified();
+                        long neww = f.lastModified();
+                        if (!oldTimings.contains(f.lastModified())) {
                             System.out.println(f.getCanonicalPath() + " has been modified");
                         }
                     } else {
                         System.out.println(f.getCanonicalPath() + " has been created");
                     }
                 } else {
+                    if (!oldFiles.contains(f)) {
+                        System.out.println(f.getCanonicalPath() + " has been created");
+                    }
                     monitoring(f.getCanonicalPath());
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-//            for (int i = 0; i < newDataBase.size(); i++) {
-//                File tempFile = newDataBase.get(i);
-//                if (tempFile.isFile()) {
-//                    int oldFileIndex = oldDataBase.indexOf(tempFile);
-//                    if (oldFileIndex != -1) {
-//                        if (oldDataBase.get(oldFileIndex).lastModified() != tempFile.lastModified()) {
-//                            System.out.println(tempFile.getCanonicalPath() + " has been modified");
-//                        }
-//                    } else {
-//                        System.out.println(tempFile.getCanonicalPath() + " has been created");
-//                    }
-//                } else {
-//                    monitoring(tempFile.getCanonicalPath());
-//                }
-//            }
-
+    private void checkDeleted() {
+        try {
+            for (int i = 0; i < oldFiles.size(); i++) {
+                if (!newFiles.contains(oldFiles.get(i))) {
+                    System.out.println(oldFiles.get(i).getCanonicalPath() + " has been deleted");
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void clear() {
-        oldDataBase.clear();
-        oldDataBase.addAll(newDataBase);
-        newDataBase.clear();
-        oldDataBase.trimToSize();
-        newDataBase.trimToSize();
+        oldFiles.clear();
+        oldFiles.addAll(newFiles);
+        newFiles.clear();
+        oldFiles.trimToSize();
+        newFiles.trimToSize();
+        oldTimings.clear();
+        oldTimings.addAll(newTimings);
+        newTimings.clear();
+        oldTimings.trimToSize();
+        newTimings.trimToSize();
     }
 
     public void run() {
