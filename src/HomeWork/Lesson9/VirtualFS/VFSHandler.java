@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 class VFSHandler {
@@ -14,6 +15,12 @@ class VFSHandler {
     VFSHandler() {
         this.root = null;
         this.scanner = new Scanner(System.in);
+    }
+
+    void startScreen() {
+        System.out.print("1) Open root VFS; ");
+        System.out.print("2) Create and open new root VFS; ");
+        System.out.println("0) Exit program");
     }
 
     void start() {
@@ -49,17 +56,12 @@ class VFSHandler {
         }
     }
 
-    void startScreen() {
-        System.out.println("1) Open root VFS");
-        System.out.println("2) Create and open new root VFS");
-        System.out.println("0) Exit program");
-    }
-
     void openRoot(String path) {
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             root = (VFSRoot) objectInputStream.readObject();
+            root.setCurrentPosition(null);
             this.path = path;
             root();
         } catch (Exception e) {
@@ -96,84 +98,239 @@ class VFSHandler {
 
     void rootScreen() {     //relate to root
         System.out.println("-- type in directories or files names to access them or...");
-        System.out.println("1) Create file");
-        System.out.println("2) Rename file");
-        System.out.println("3) Delete file");
-        System.out.println("4) Create directory");
-        System.out.println("5) Rename directory");
-        System.out.println("6) Delete directory");
-        System.out.println("9) Return");
+        System.out.print("1) Create file; ");
+        System.out.print("2) Rename file; ");
+        System.out.print("3) Delete file; ");
+        System.out.print("4) Create directory; ");
+        System.out.print("5) Rename directory; ");
+        System.out.print("6) Delete directory; ");
+        System.out.print("9) Return; ");
         System.out.println("0) Exit program");
-    }
-
-    void rootContent() {
-        if ( (root.getChildDirectories() == null) && (root.getFiles() == null) ||
-             (root.getChildDirectories().isEmpty() && root.getFiles().isEmpty()) ) {
-            System.out.println("No files or directories yet");
-        } else {
-            for (VFSDirectory directory : root.getChildDirectories()) {
-                System.out.println("\\" + directory.getName());
-            }
-            for (VFSFile file : root.getFiles()) {
-                System.out.println("\\" + file.getName());
-            }
-        }
     }
 
     void root() {   // relate to rootScreen
         rootScreen();
         rootContent();
         String input = scanner.nextLine();
-        while (!input.equalsIgnoreCase("9")) {
+        while (!input.equalsIgnoreCase("mainmenu")) {
             switch (input) {
                 case "1":
-                    System.out.print("Type in file name: ");
-                    if (root.addFile(getInputString())) {
-                        System.out.println("File added!");
-                        saveRoot();
-                        rootScreen();
-                        rootContent();
-                    } else {
-                        System.out.println("File with this name already exists!");
-                    }
+                    createFile();
                     input = "";
                     break;
                 case "2":
-
+                    renameFile();
+                    input = "";
+                    break;
+                case "3":
+                    deleteFile();
+                    input = "";
+                    break;
+                case "4":
+                    createDirectory();
+                    input = "";
+                    break;
+                case "5":
+                    renameDirectory();
+                    input = "";
+                    break;
+                case "6":
+                    deleteDirectory();
+                    input = "";
+                    break;
+                case "7":
+                    searchFiles();
+                    input = "";
+                    break;
                 case "9":
+                    if (root.getCurrentPosition() == null) {
+                        input = "mainmenu";
+                        break;
+                    } else if (root.getCurrentPosition().getParentDirectory() == null) {
+                        root.setCurrentPosition(null);
+                        rootContent();
+                    } else {
+                        root.setCurrentPosition(root.getCurrentPosition().getParentDirectory());
+                        rootContent();
+                    }
+                    input = "";
                     break;
                 case "0":
                     System.exit(0);
-
                 default:
                     if (input == "") {
                         input = scanner.nextLine();
                         break;
                     }
-                    if (openDirectory(root.getDirectory(input))) {
-                        // change position -
-                        break;
-                    } else {
-                        if (openFile(root.getFile(input))) {
-                            System.out.println("Done");
-                            rootScreen();
-                            rootContent();
-                        } else {
-                            System.out.println("No such file or directory");
-                        }
-                    }
+                    openFileOrDirectory(input);
                     input = scanner.nextLine();
                     break;
             }
         }
     }
 
-    boolean openDirectory(VFSDirectory directory) {
-        if (directory == null) {
-            return false;
+    void rootContent() {
+        if (root.getCurrentPosition() == null) {
+            if ( (root.getChildDirectories() == null) && (root.getFiles() == null) ||
+                    (root.getChildDirectories().isEmpty() && root.getFiles().isEmpty()) ) {
+                System.out.println("No files or directories yet");
+            } else {
+                System.out.println("Content: ");
+                for (VFSDirectory directory : root.getChildDirectories()) {
+                    System.out.println("\\" + directory.getName());
+                }
+                for (VFSFile file : root.getFiles()) {
+                    System.out.println("\\" + file.getName());
+                }
+            }
         } else {
-            root.setCurrentPosition(directory);
-            return true;
+            if ( (root.getCurrentPosition().getChildDirectories() == null) &&
+                 (root.getCurrentPosition().getFiles() == null) ||
+                 (root.getCurrentPosition().getChildDirectories().isEmpty() &&
+                  root.getCurrentPosition().getFiles().isEmpty()) ) {
+                System.out.println("No files or directories yet");
+            } else {
+                System.out.println("Content: ");
+                for (VFSDirectory directory : root.getCurrentPosition().getChildDirectories()) {
+                    System.out.println("\\" + directory.getFullPath());
+                }
+                for (VFSFile file : root.getCurrentPosition().getFiles()) {
+                    System.out.println("\\" + file.getFullPath());
+                }
+            }
+        }
+
+    }
+
+    void createFile() {
+        System.out.print("Type in file name: ");
+        if (root.addFile(scanner.nextLine())) {
+            System.out.println("File added!");
+            saveRoot();
+            rootContent();
+        } else {
+            System.out.println("File with this name already exists!");
+        }
+    }
+
+    void renameFile() {
+        System.out.print("Type in the name of the file to rename: ");
+        VFSFile file;
+        if (root.getCurrentPosition() == null) {
+            file = root.getFile(scanner.nextLine());
+        } else {
+            file = root.getCurrentPosition().getFile(scanner.nextLine());
+        }
+        if (file != null) {
+            System.out.print("Type in new name: ");
+            if (file.rename(scanner.nextLine())) {
+                System.out.println("File renamed!");
+                saveRoot();
+                rootContent();
+            } else {
+                System.out.println("This file name is already in use!");
+                rootContent();
+            }
+        } else {
+            System.out.println("No such file exists!");
+            rootContent();
+        }
+    }
+
+    void deleteFile() {
+        System.out.print("Type in the name of the file to delete: ");
+        if (root.deleteFile(scanner.nextLine())) {
+            System.out.println("File deleted!");
+            saveRoot();
+            rootContent();
+        } else {
+            System.out.println("No such file!");
+        }
+    }
+
+    void createDirectory() {
+        System.out.print("Type in directory name: ");
+        if (root.addDirectory(scanner.nextLine())) {
+            System.out.println("Directory added!");
+            saveRoot();
+            rootContent();
+        } else {
+            System.out.println("Directory with this name already exists!");
+        }
+    }
+
+    void renameDirectory() {
+        System.out.print("Type in the name of the directory to rename: ");
+        VFSDirectory directoryRename;
+        if (root.getCurrentPosition() == null) {
+            directoryRename = root.getChildDirectory(scanner.nextLine());
+        } else {
+            directoryRename = root.getCurrentPosition().getChildDirectory(scanner.nextLine());
+        }
+        if (directoryRename != null) {
+            System.out.print("Type in new name: ");
+            if (directoryRename.rename(scanner.nextLine())) {
+                System.out.println("Directory renamed!");
+                saveRoot();
+                rootContent();
+            } else {
+                System.out.println("This directory name is already in use!");
+                rootContent();
+            }
+        } else {
+            System.out.println("No such directory exists!");
+            rootContent();
+        }
+    }
+
+    void deleteDirectory() {
+        System.out.print("Type in the name of the directory to delete: ");
+        if (root.deleteDirectory(scanner.nextLine())) {
+            System.out.println("Directory deleted!");
+            saveRoot();
+            rootContent();
+        } else {
+            System.out.println("No such directory!");
+        }
+    }
+
+    void searchFiles() {
+        System.out.print("Type in the name of the file you want to find: ");
+        ArrayList<VFSFile> foundFiles = root.searchFiles(scanner.nextLine());
+        if (foundFiles == null) {
+            System.out.println("Nothing is found");
+        } else {
+            search(foundFiles);
+        }
+    }
+
+    void openFileOrDirectory(String input) {
+        if (root.getCurrentPosition() == null) {
+            if (openDirectory(root.getChildDirectory(input))) {
+                rootScreen();
+                rootContent();
+            } else {
+                if (openFile(root.getFile(input))) {
+                    System.out.println("Done");
+                    rootScreen();
+                    rootContent();
+                } else {
+                    System.out.println("No such file or directory");
+                }
+            }
+        } else {
+            if (openDirectory(root.getCurrentPosition().getChildDirectory(input))) {
+                rootScreen();
+                rootContent();
+            } else {
+                if (openFile(root.getCurrentPosition().getFile(input))) {
+                    System.out.println("Done");
+                    rootScreen();
+                    rootContent();
+                } else {
+                    System.out.println("No such file or directory");
+                }
+            }
         }
     }
 
@@ -199,7 +356,7 @@ class VFSHandler {
 
     void fileAddContent(VFSFile file) {
         System.out.println("Fill the file. To save and exit type in 'saveexit'");
-        String input = getInputString();
+        String input = scanner.nextLine();
         while (!input.equalsIgnoreCase("exit")) {
             switch (input) {
                 case "saveexit":
@@ -208,42 +365,82 @@ class VFSHandler {
                     break;
                 default:
                     file.getData().add(input);
-                    input = getInputString();
+                    input = scanner.nextLine();
                     break;
             }
         }
     }
 
-
-
-
-
-
-
-
-
-    void createFile() {
-
+    boolean openDirectory(VFSDirectory directory) {
+        if (directory == null) {
+            return false;
+        } else {
+            root.setCurrentPosition(directory);
+            return true;
+        }
     }
 
-    void createNewRoot() {
-
-    }
-
-    private int getInputInt() {
-        int input = -1;
-        while (input < 0) {
-            try {
-                input = scanner.nextInt();
-            } catch (Exception e) {
-                scanner.nextLine();
-                System.out.println("No such choice!");
+    void searchScreen(ArrayList<VFSFile> foundFiles) {
+        System.out.println("-- type in file index to access it or...");
+        System.out.print("2) Rename file; ");
+        System.out.print("3) Delete file; ");
+        System.out.print("9) Return; ");
+        System.out.println("0) Exit program");
+        if ( (foundFiles == null) || (foundFiles.isEmpty()) ) {
+            System.out.println("No files found");
+        } else {
+            for (int i = 0; i < foundFiles.size(); i++) {
+                System.out.println((i + 1) + " \\" + foundFiles.get(i).getFullPath());
             }
         }
-        return input;
     }
 
-    private String getInputString() {
-        return scanner.nextLine();
+    void search(ArrayList<VFSFile> foundFiles) {
+        searchScreen(foundFiles);
+        String input = scanner.nextLine();
+        while (!input.equalsIgnoreCase("exittoroot")) {
+            switch (input) {
+                case "2":
+
+                    input = "";
+                    break;
+                case "3":
+                    searchDelete(foundFiles);
+                    searchScreen(foundFiles);
+                    input = "";
+                    break;
+                case "9":
+                    input = "exittoroot";
+                    break;
+                case "0":
+                    System.exit(0);
+                default:
+                    if (input == "") {
+                        input = scanner.nextLine();
+                        break;
+                    }
+
+            }
+        }
+    }
+
+    void searchDelete(ArrayList<VFSFile> foundFiles) {
+        System.out.print("Type in file index: ");
+        int input = 0;
+        try {
+            input = Integer.valueOf(scanner.nextLine());
+        } catch (Exception e) {
+            System.out.println("No such index!");
+        }
+        if ( (input < 1) || (input > foundFiles.size()) ) {
+            System.out.println("No such index!");
+        } else {
+            VFSFile file = foundFiles.get(input - 1);
+            if (file.getParentDirectory() == null) {
+                root.getFiles().remove(file);
+            } else {
+                file.getParentDirectory().getFiles().remove(file);
+            }
+        }
     }
 }

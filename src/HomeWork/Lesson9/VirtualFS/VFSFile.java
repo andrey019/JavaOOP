@@ -8,27 +8,54 @@ class VFSFile implements Serializable {
     private String fullPath;
     private ArrayList<String> data;
     private VFSDirectory parentDirectory;
+    private VFSRoot root;
 
-    VFSFile(String name, VFSDirectory parentDirectory) {
+    VFSFile(String name, VFSDirectory parentDirectory, VFSRoot root) {
         this.name = name;
         this.data = new ArrayList<>();
         this.parentDirectory = parentDirectory;
         if (parentDirectory != null) {
             this.fullPath = parentDirectory.getFullPath();
         }
+        this.root = root;
     }
 
     boolean rename(String newName) {
-        if (parentDirectory.getFile(newName) != null) {
-            return false;
+        if (parentDirectory != null) {
+            if (parentDirectory.getFile(newName) != null) {
+                return false;
+            } else {
+                this.name = newName;
+                return true;
+            }
         } else {
-            this.name = newName;
-            return true;
+            if (root.getFile(newName) != null) {
+                return false;
+            } else {
+                this.name = newName;
+                return true;
+            }
         }
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getFullPath() {
+        if (parentDirectory != null) {
+            return parentDirectory.getFullPath() + "\\" + name;
+        } else {
+            return name;
+        }
+    }
+
+    public VFSDirectory getParentDirectory() {
+        return parentDirectory;
+    }
+
+    public VFSRoot getRoot() {
+        return root;
     }
 
     public ArrayList<String> getData() {

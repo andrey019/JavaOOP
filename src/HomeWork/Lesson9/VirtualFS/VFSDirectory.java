@@ -5,17 +5,35 @@ import java.util.ArrayList;
 
 class VFSDirectory implements Serializable {
     private VFSDirectory parentDirectory;
-    private VFSRoot rootDirectory;
+    private VFSRoot root;
     private ArrayList<VFSDirectory> childDirectories;
     private ArrayList<VFSFile> files;
     private String name;
 
-    VFSDirectory(VFSRoot rootDirectory, VFSDirectory parentDirectory, String name) {
+    VFSDirectory(VFSRoot root, VFSDirectory parentDirectory, String name) {
         this.parentDirectory = parentDirectory;
-        this.rootDirectory = rootDirectory;
+        this.root = root;
         this.childDirectories = new ArrayList<>();
         this.files = new ArrayList<>();
         this.name = name;
+    }
+
+    boolean rename(String newName) {
+        if (parentDirectory != null) {
+            if (parentDirectory.getChildDirectory(newName) != null) {
+                return false;
+            } else {
+                this.name = newName;
+                return true;
+            }
+        } else {
+            if (root.getChildDirectory(newName) != null) {
+                return false;
+            } else {
+                this.name = newName;
+                return true;
+            }
+        }
     }
 
     public String getFullPath() {
@@ -26,7 +44,8 @@ class VFSDirectory implements Serializable {
         }
     }
 
-    public void listOnDisplay() {
+    /*
+    public void getAllContent() {
         for (VFSDirectory child : childDirectories) {
             System.out.println(child.getFullPath());
         }
@@ -34,6 +53,7 @@ class VFSDirectory implements Serializable {
             System.out.println(getFullPath() + "\\" + file.getName());
         }
     }
+    */
 
     VFSFile getFile(String name) {
         for (VFSFile file : files) {
@@ -44,7 +64,7 @@ class VFSDirectory implements Serializable {
         return null;
     }
 
-    VFSDirectory getDirectory(String name) {
+    VFSDirectory getChildDirectory(String name) {
         for (VFSDirectory child : childDirectories) {
             if (child.getName().equalsIgnoreCase(name)) {
                 return child;
@@ -54,12 +74,16 @@ class VFSDirectory implements Serializable {
     }
 
     void searchFiles(String name, ArrayList<VFSFile> foundFiles) {
-        for (VFSDirectory child : childDirectories) {
-            child.searchFiles(name, foundFiles);
+        if ( (childDirectories != null) && (!childDirectories.isEmpty()) ) {
+            for (VFSDirectory child : childDirectories) {
+                child.searchFiles(name, foundFiles);
+            }
         }
-        for (VFSFile file : files) {
-            if (file.getName().equalsIgnoreCase(name)) {
-                foundFiles.add(file);
+        if ( (files != null) && (!files.isEmpty()) ) {
+            for (VFSFile file : files) {
+                if (file.getName().equalsIgnoreCase(name)) {
+                    foundFiles.add(file);
+                }
             }
         }
     }
