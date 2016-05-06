@@ -36,6 +36,21 @@ class VFSDirectory implements Serializable {
         }
     }
 
+    void searchFiles(String name, ArrayList<VFSFile> foundFiles) {
+        if ( (childDirectories != null) && (!childDirectories.isEmpty()) ) {
+            for (VFSDirectory child : childDirectories) {
+                child.searchFiles(name, foundFiles);
+            }
+        }
+        if ( (files != null) && (!files.isEmpty()) ) {
+            for (VFSFile file : files) {
+                if (file.getName().equalsIgnoreCase(name)) {
+                    foundFiles.add(file);
+                }
+            }
+        }
+    }
+
     public String getFullPath() {
         if (parentDirectory == null) {
             return name;
@@ -43,17 +58,6 @@ class VFSDirectory implements Serializable {
             return parentDirectory.getFullPath() + "\\" + name;
         }
     }
-
-    /*
-    public void getAllContent() {
-        for (VFSDirectory child : childDirectories) {
-            System.out.println(child.getFullPath());
-        }
-        for (VFSFile file : files) {
-            System.out.println(getFullPath() + "\\" + file.getName());
-        }
-    }
-    */
 
     VFSFile getFile(String name) {
         for (VFSFile file : files) {
@@ -71,21 +75,6 @@ class VFSDirectory implements Serializable {
             }
         }
         return null;
-    }
-
-    void searchFiles(String name, ArrayList<VFSFile> foundFiles) {
-        if ( (childDirectories != null) && (!childDirectories.isEmpty()) ) {
-            for (VFSDirectory child : childDirectories) {
-                child.searchFiles(name, foundFiles);
-            }
-        }
-        if ( (files != null) && (!files.isEmpty()) ) {
-            for (VFSFile file : files) {
-                if (file.getName().equalsIgnoreCase(name)) {
-                    foundFiles.add(file);
-                }
-            }
-        }
     }
 
     public ArrayList<VFSDirectory> getChildDirectories() {

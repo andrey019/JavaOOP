@@ -86,6 +86,23 @@ class VFSRoot implements Serializable {
         }
     }
 
+    ArrayList<VFSFile> searchFiles(String name) {
+        ArrayList<VFSFile> foundFiles = new ArrayList<>();
+        if (currentPosition != null) {
+            currentPosition.searchFiles(name, foundFiles);
+        } else {
+            for (VFSDirectory child : childDirectories) {
+                child.searchFiles(name, foundFiles);
+            }
+            for (VFSFile file : files) {
+                if (file.getName().equalsIgnoreCase(name)) {
+                    foundFiles.add(file);
+                }
+            }
+        }
+        return foundFiles;
+    }
+
     VFSDirectory getChildDirectory(String name) {
         if (currentPosition == null) {
             for (VFSDirectory child : childDirectories) {
@@ -111,39 +128,6 @@ class VFSRoot implements Serializable {
         }
         return null;
     }
-    /*
-    VFSDirectory getDirectory(String name) {
-        for (VFSDirectory child : childDirectories) {
-            if (child.getName().equalsIgnoreCase(name)) {
-                return child;
-            }
-        }
-        return null;
-    }
-    */
-
-    ArrayList<VFSFile> searchFiles(String name) {
-        ArrayList<VFSFile> foundFiles = new ArrayList<>();
-        if (currentPosition != null) {
-            currentPosition.searchFiles(name, foundFiles);
-        } else {
-            for (VFSDirectory child : childDirectories) {
-                child.searchFiles(name, foundFiles);
-            }
-            for (VFSFile file : files) {
-                if (file.getName().equalsIgnoreCase(name)) {
-                    foundFiles.add(file);
-                }
-            }
-        }
-        return foundFiles;
-    }
-
-    /*
-    void getFullPath() {
-        currentPosition.getFullPath();
-    }
-    */
 
     public VFSDirectory getCurrentPosition() {
         return currentPosition;

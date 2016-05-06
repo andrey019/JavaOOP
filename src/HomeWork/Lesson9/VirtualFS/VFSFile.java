@@ -54,10 +54,6 @@ class VFSFile implements Serializable {
         return parentDirectory;
     }
 
-    public VFSRoot getRoot() {
-        return root;
-    }
-
     public ArrayList<String> getData() {
         return data;
     }

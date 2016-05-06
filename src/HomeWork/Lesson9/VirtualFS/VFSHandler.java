@@ -65,7 +65,6 @@ class VFSHandler {
             this.path = path;
             root();
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("No such root file, or it has been damaged");
             root = null;
         }
@@ -96,7 +95,7 @@ class VFSHandler {
         }
     }
 
-    void rootScreen() {     //relate to root
+    void rootScreen() {
         System.out.println("-- type in directories or files names to access them or...");
         System.out.print("1) Create file; ");
         System.out.print("2) Rename file; ");
@@ -104,11 +103,12 @@ class VFSHandler {
         System.out.print("4) Create directory; ");
         System.out.print("5) Rename directory; ");
         System.out.print("6) Delete directory; ");
+        System.out.print("7) Search files; ");
         System.out.print("9) Return; ");
         System.out.println("0) Exit program");
     }
 
-    void root() {   // relate to rootScreen
+    void root() {
         rootScreen();
         rootContent();
         String input = scanner.nextLine();
@@ -297,7 +297,7 @@ class VFSHandler {
     void searchFiles() {
         System.out.print("Type in the name of the file you want to find: ");
         ArrayList<VFSFile> foundFiles = root.searchFiles(scanner.nextLine());
-        if (foundFiles == null) {
+        if (foundFiles.isEmpty()) {
             System.out.println("Nothing is found");
         } else {
             search(foundFiles);
@@ -381,7 +381,7 @@ class VFSHandler {
     }
 
     void searchScreen(ArrayList<VFSFile> foundFiles) {
-        System.out.println("-- type in file index to access it or...");
+        System.out.print("1) Open file; ");
         System.out.print("2) Rename file; ");
         System.out.print("3) Delete file; ");
         System.out.print("9) Return; ");
@@ -390,7 +390,7 @@ class VFSHandler {
             System.out.println("No files found");
         } else {
             for (int i = 0; i < foundFiles.size(); i++) {
-                System.out.println((i + 1) + " \\" + foundFiles.get(i).getFullPath());
+                System.out.println("[" + (i) + "] \\" + foundFiles.get(i).getFullPath());
             }
         }
     }
@@ -400,8 +400,13 @@ class VFSHandler {
         String input = scanner.nextLine();
         while (!input.equalsIgnoreCase("exittoroot")) {
             switch (input) {
+                case "1":
+                    searchOpenFile(foundFiles);
+                    input = "";
+                    break;
                 case "2":
-
+                    searchRename(foundFiles);
+                    searchScreen(foundFiles);
                     input = "";
                     break;
                 case "3":
@@ -411,6 +416,8 @@ class VFSHandler {
                     break;
                 case "9":
                     input = "exittoroot";
+                    rootScreen();
+                    rootContent();
                     break;
                 case "0":
                     System.exit(0);
@@ -419,28 +426,64 @@ class VFSHandler {
                         input = scanner.nextLine();
                         break;
                     }
-
             }
         }
     }
 
     void searchDelete(ArrayList<VFSFile> foundFiles) {
-        System.out.print("Type in file index: ");
-        int input = 0;
+        System.out.print("Type in the index of the file to delete: ");
+        VFSFile file = searchGetFile(foundFiles);
+        if (file != null) {
+            if (file.getParentDirectory() == null) {
+                root.getFiles().remove(file);
+                foundFiles.remove(file);
+            } else {
+                file.getParentDirectory().getFiles().remove(file);
+                foundFiles.remove(file);
+            }
+        } else {
+            System.out.println("No such index!");
+        }
+    }
+
+    void searchRename(ArrayList<VFSFile> foundFiles) {
+        System.out.print("Type in the index of the file to rename: ");
+        VFSFile file = searchGetFile(foundFiles);
+        if (file != null) {
+            System.out.print("Type in new name: ");
+            String name = scanner.nextLine();
+            if ( file.rename(name) ) {
+                System.out.println("File renamed!");
+            } else {
+                System.out.println("This name is already in use in this file's directory!");
+            }
+        } else {
+            System.out.println("No such index!");
+        }
+    }
+
+    void searchOpenFile(ArrayList<VFSFile> foundFiles) {
+        System.out.print("Type in the index of the file to open: ");
+        VFSFile file = searchGetFile(foundFiles);
+        if (openFile(file)) {
+            System.out.println("Done");
+            searchScreen(foundFiles);
+        } else {
+            System.out.println("No such index!");
+        }
+    }
+
+    VFSFile searchGetFile(ArrayList<VFSFile> foundFiles) {
+        int input = -1;
         try {
             input = Integer.valueOf(scanner.nextLine());
         } catch (Exception e) {
-            System.out.println("No such index!");
+            return null;
         }
-        if ( (input < 1) || (input > foundFiles.size()) ) {
-            System.out.println("No such index!");
+        if ( (input < 0) || (input >= foundFiles.size()) ) {
+            return null;
         } else {
-            VFSFile file = foundFiles.get(input - 1);
-            if (file.getParentDirectory() == null) {
-                root.getFiles().remove(file);
-            } else {
-                file.getParentDirectory().getFiles().remove(file);
-            }
+            return foundFiles.get(input);
         }
     }
 }
