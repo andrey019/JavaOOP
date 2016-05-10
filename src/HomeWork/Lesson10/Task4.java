@@ -13,7 +13,7 @@ class Task4 {
         for (int i = 0; i < inStrings.length; i++) {
             hashMap.put(inStrings[i], inStrings[i]);
         }
-        System.out.println(hashMap.values());
-        System.out.println("There is " + (inStrings.length - hashMap.size()) + " repeated elements");
+        System.out.println(hashMap.values());       // task 4
+        System.out.println("There is " + (inStrings.length - hashMap.size()) + " repeated elements");   //task 3
     }
 }
