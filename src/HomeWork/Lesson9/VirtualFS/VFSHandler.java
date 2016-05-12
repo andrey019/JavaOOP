@@ -426,6 +426,8 @@ class VFSHandler {
                         input = scanner.nextLine();
                         break;
                     }
+                    System.out.println("No such option!");
+                    break;
             }
         }
     }

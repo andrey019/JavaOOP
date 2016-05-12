@@ -46,25 +46,33 @@ class UserDatabase implements Serializable {
         return false;
     }
 
-    User getUser(int key) {
-        return database.get(key);
+    HashMap<Integer, User> getUser(int key) {
+        HashMap<Integer, User> foundUser = new HashMap<>();
+        if (database.containsKey(key)) {
+            foundUser.put(key, database.get(key));
+        }
+        return foundUser;
     }
 
-    ArrayList<User> searchByName(String name) {
-        ArrayList<User> foundUsers = new ArrayList<>();
+    HashMap<Integer, User> getAllUsers() {
+        return database;
+    }
+
+    HashMap<Integer, User> searchByName(String name) {
+        HashMap<Integer, User> foundUsers = new HashMap<>();
         for (Map.Entry<Integer, User> entry : database.entrySet()) {
             if (entry.getValue().getName().equalsIgnoreCase(name)) {
-                foundUsers.add(entry.getValue());
+                foundUsers.put(entry.getKey(), entry.getValue());
             }
         }
         return foundUsers;
     }
 
-    ArrayList<User> searchByAge(int age) {
-        ArrayList<User> foundUsers = new ArrayList<>();
+    HashMap<Integer, User> searchByAge(int age) {
+        HashMap<Integer, User> foundUsers = new HashMap<>();
         for (Map.Entry<Integer, User> entry : database.entrySet()) {
             if (entry.getValue().getAge() == age) {
-                foundUsers.add(entry.getValue());
+                foundUsers.put(entry.getKey(), entry.getValue());
             }
         }
         return foundUsers;
