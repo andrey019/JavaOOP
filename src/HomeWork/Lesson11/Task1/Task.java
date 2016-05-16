@@ -84,14 +84,14 @@ class Task {
             if (hostName.lastIndexOf("/") == 6) {
                 File dir = new File(saveDir);
                 dir.mkdirs();
-                file = new File(saveDir + "\\" + hostName.substring(7, hostName.length()) + ".txt");
+                file = new File(saveDir + "\\" + hostName.substring(7, hostName.length()) + ".html");
                 file.createNewFile();
             } else {
                 int position = hostName.lastIndexOf("/");
                 File dir = new File(saveDir + "\\" + hostName.substring(7, hostName.lastIndexOf("/")));
                 dir.mkdirs();
                 file = new File(dir.getCanonicalPath() + "\\" +
-                        hostName.substring(position + 1, hostName.length()) + ".txt");
+                        hostName.substring(position + 1, hostName.length()) + ".html");
                 file.createNewFile();
             }
             PrintWriter printWriter = new PrintWriter(file);
