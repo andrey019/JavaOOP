@@ -88,7 +88,7 @@ class Task {
                 file.createNewFile();
             } else {
                 int position = hostName.lastIndexOf("/");
-                File dir = new File(saveDir + "\\" + hostName.substring(7, hostName.lastIndexOf("/")));
+                File dir = new File(saveDir + "\\" + hostName.substring(7, position));
                 dir.mkdirs();
                 file = new File(dir.getCanonicalPath() + "\\" +
                         hostName.substring(position + 1, hostName.length()) + ".html");
