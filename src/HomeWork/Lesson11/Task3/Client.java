@@ -5,10 +5,18 @@ import java.net.Socket;
 import java.util.Scanner;
 
 class Client {
-    private static void connectToServer(String name, int port) {
+    private String hostName;
+    private int port;
+
+    Client(String hostName, int port) throws Exception {
+        this.hostName = hostName;
+        this.port = port;
+    }
+
+    private void connectToServer() {
         try {
-            Socket socket = new Socket(name, port);
-            System.out.println("Connected: " + socket.getRemoteSocketAddress());
+            Socket socket = new Socket(hostName, port);
+            System.out.println("Connected to: " + socket.getRemoteSocketAddress());
             DataInputStream in = new DataInputStream(socket.getInputStream());
             System.out.println("Server response: " + in.readUTF());
             socket.close();
@@ -17,12 +25,12 @@ class Client {
         }
     }
 
-    private static void start() {
+    private void start() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Type in '1' to connect...");
             if (scanner.nextLine().equalsIgnoreCase("1")) {
-                connectToServer("localhost", 20000);
+                connectToServer();
                 System.out.println("Connection is closed");
                 System.out.println();
             }
@@ -30,6 +38,11 @@ class Client {
     }
 
     public static void main(String[] args) {
-        start();
+        try {
+            Client client = new Client("localhost", 20000);
+            client.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
