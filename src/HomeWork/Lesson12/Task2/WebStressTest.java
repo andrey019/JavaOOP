@@ -17,13 +17,6 @@ class WebStressTest extends Thread {
     }
 
     public void run() {
-        try {
-            Socket socket = new Socket(hostName, 80);
-            socket.close();
-        } catch (IOException e) {
-            System.out.println("Host not found!");
-            this.interrupt();
-        }
         Socket socket;
         while (!isInterrupted()) {
             try {

@@ -46,10 +46,21 @@ class WebStressTestHandler extends Thread {
         return sum;
     }
 
+    private int aliveThreads() {
+        int result = 0;
+        for (int i = 0; i < loadAmount; i++) {
+            if ((establishedConnections[i] > 0) || (failedConnections[i] > 0)) {
+                result++;
+            }
+        }
+        return result;
+    }
+
     private void progressOnScreen() {
         while (true) {
             System.out.println("Established connections: " + sumConnections(establishedConnections) +
-                                    ". Failed connections: " + sumConnections(failedConnections));
+                                    ". Failed connections: " + sumConnections(failedConnections) +
+                                    ". Alive threads: " + aliveThreads());
             try {
                 Thread.sleep(1500);
             } catch (InterruptedException e) {
