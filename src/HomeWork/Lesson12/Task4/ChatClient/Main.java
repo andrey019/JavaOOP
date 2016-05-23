@@ -1,5 +1,6 @@
 package HomeWork.Lesson12.Task4.ChatClient;
 
+import HomeWork.Lesson12.Task4.ChatServer.Message;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -22,10 +23,12 @@ class Main {
                     try {
                         while ( ! isInterrupted()) {
                             Message msg = Message.readFromStream(is);
+
                             if (msg == null)
                                 Thread.yield();
                             else
                                 System.out.println(msg.toString());
+                            Thread.sleep(100);
                         }
                     } catch (Exception e) {
                         return;

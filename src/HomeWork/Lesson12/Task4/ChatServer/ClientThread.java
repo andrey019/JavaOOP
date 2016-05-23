@@ -33,15 +33,17 @@ class ClientThread extends Thread {
 			while ( ! isInterrupted()) {
 				if (pos < msg.size())
 					listToBytes(os);
-				
+
 				Message m = Message.readFromStream(is);
 				if (m != null)
 					msg.add(m);
+                Thread.sleep(100);
 			}
 			
 			socket.close();
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			return;
 		}
 	}

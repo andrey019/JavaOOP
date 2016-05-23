@@ -1,5 +1,6 @@
 package HomeWork.Lesson12.Task3.ChatClient;
 
+import HomeWork.Lesson12.Task3.ChatServer.Message;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;

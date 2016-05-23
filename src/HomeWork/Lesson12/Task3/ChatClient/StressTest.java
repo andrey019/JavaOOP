@@ -1,5 +1,7 @@
 package HomeWork.Lesson12.Task3.ChatClient;
 
+import HomeWork.Lesson12.Task3.ChatServer.Message;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -22,21 +24,21 @@ class StressTest extends Thread {
         try {
             socket = new Socket(hostName, port);
             os = socket.getOutputStream();
-            //while (true) {
+            while (true) {
                 String text = "stress test";
                 Message m = new Message();
                 m.text = text;
                 m.from = login;
                 m.to = "";
                 m.writeToStream(os);
-            //}
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void main(String[] args) {
-        int loadFactor = 10;
+        int loadFactor = 100;
         String hostName = "127.0.0.1";
         int port = 5000;
         ArrayList<StressTest> threads = new ArrayList<>();

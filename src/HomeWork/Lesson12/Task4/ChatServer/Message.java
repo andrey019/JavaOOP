@@ -3,7 +3,7 @@ package HomeWork.Lesson12.Task4.ChatServer;
 import java.io.*;
 import java.util.Date;
 
-class Message implements Serializable {
+public class Message implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public Date date = new Date();

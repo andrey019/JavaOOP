@@ -25,7 +25,7 @@ class Server {
 
 					while ( ! isInterrupted()) {
 						Socket c = s.accept();
-						
+						System.out.println("client thread");
 						ClientThread ct = new ClientThread(c, msg);
 						ct.start();
 					}
