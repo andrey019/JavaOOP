@@ -10,8 +10,9 @@ public class Message implements Serializable {
 	public String from;
 	public String to;
 	public boolean isFile;
-	public transient String text;
-	public transient String path;
+	public String text;
+	public transient String fileTypeAndName;
+	public transient byte[] fileBytes = new byte[1];
 	
 	@Override
 	public String toString() {
@@ -36,7 +37,7 @@ public class Message implements Serializable {
 			os.writeObject(this);
 			
 			if ( ! isFile) {
-				os.writeUTF(text);
+				//os.writeUTF(text);
 			} else {
 				// write file content
 			}
@@ -69,7 +70,7 @@ public class Message implements Serializable {
 		try {
 			Message msg = (Message) os.readObject();
 			if ( ! msg.isFile) {
-				msg.text = (String) os.readUTF();
+				//msg.text = (String) os.readUTF();
 			} else {
 				// read file content
 			}
@@ -79,4 +80,16 @@ public class Message implements Serializable {
 			os.close();
 		}
 	}
+
+    public boolean attachFile(String path) {
+        try {
+            RandomAccessFile file = new RandomAccessFile(path, "r");
+            fileBytes = new byte[(int)file.length()];
+            file.readFully(fileBytes);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

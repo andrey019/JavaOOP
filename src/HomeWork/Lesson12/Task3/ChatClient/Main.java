@@ -2,6 +2,7 @@ package HomeWork.Lesson12.Task3.ChatClient;
 
 import HomeWork.Lesson12.Task3.ChatServer.Message;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Scanner;
@@ -16,6 +17,9 @@ public class Main {
 
 			System.out.println("Enter login: ");
 			final String login = scanner.nextLine();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(os);
+            objectOutputStream.writeUTF(login);
+            objectOutputStream.flush();
 
             Thread th = new Thread() {
                 @Override
@@ -27,8 +31,9 @@ public class Main {
                                 Thread.yield();
                             else
                                 System.out.println(msg.toString());
+
+                            Thread.sleep(100);
                         }
-						Thread.sleep(100);
                     } catch (Exception e) {
                         return;
                     }
@@ -42,7 +47,10 @@ public class Main {
 					String s = scanner.nextLine();
 					if (s.isEmpty())
 						break;
-					
+
+                    if (s.equalsIgnoreCase("!sendfile")) {
+
+                    }
 					int del = s.indexOf(':');
 					String to = "";
 					String text = s;

@@ -1,6 +1,7 @@
 package HomeWork.Lesson12.Task3.ChatServer;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public class Server {
 	private Thread thread;
     private int connected = 0;
 	private List<Message> msg = Collections.synchronizedList(new ArrayList<Message>());
+    private List<String> clients = Collections.synchronizedList(new ArrayList<String>());
 
 	public Server(int port) {
 		this.port = port;
@@ -26,8 +28,10 @@ public class Server {
 
 					while ( ! isInterrupted()) {
 						Socket c = s.accept();
-						
-						ClientThread ct = new ClientThread(c, msg);
+						ObjectInputStream objectInputStream = new ObjectInputStream(c.getInputStream());
+                        clients.add(objectInputStream.readUTF());
+						ClientThread ct = new ClientThread(c, msg, clients.get(clients.size() - 1), clients);
+
 						ct.start();
                         connected++;
 					}
