@@ -9,10 +9,10 @@ public class Message implements Serializable {
 	public Date date = new Date();
 	public String from;
 	public String to;
-	public boolean isFile;
+	public boolean isFile = false;
 	public String text;
-	public transient String fileTypeAndName;
-	public transient byte[] fileBytes = new byte[1];
+	public String fileTypeAndName = null;
+	public byte[] fileBytes = new byte[1];
 	
 	@Override
 	public String toString() {
@@ -35,12 +35,6 @@ public class Message implements Serializable {
 		ObjectOutputStream os = new ObjectOutputStream(bs);
 		try {
 			os.writeObject(this);
-			
-			if ( ! isFile) {
-				//os.writeUTF(text);
-			} else {
-				// write file content
-			}
 		} finally {
 			os.flush();
 			os.close();
@@ -69,12 +63,6 @@ public class Message implements Serializable {
 		ObjectInputStream os = new ObjectInputStream(bs);
 		try {
 			Message msg = (Message) os.readObject();
-			if ( ! msg.isFile) {
-				//msg.text = (String) os.readUTF();
-			} else {
-				// read file content
-			}
-			
 			return msg;
 		} finally {
 			os.close();

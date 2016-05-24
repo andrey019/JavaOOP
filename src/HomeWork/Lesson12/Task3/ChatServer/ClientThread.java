@@ -23,17 +23,48 @@ public class ClientThread extends Thread {
 		this.msg = msg;
 	}
 
-    private void listToBytes(OutputStream os) throws IOException {
+    private void listToBytes(OutputStream os, InputStream is) throws IOException {
         final int sz = msg.size();
         for (int i = pos; i < sz; i++) {
-            if (msg.get(i).to.equalsIgnoreCase(clientName) || msg.get(i).to.equalsIgnoreCase("") ||
-                msg.get(i).from.equalsIgnoreCase(clientName)) {
+            if ( (msg.get(i).to.equalsIgnoreCase(clientName) || msg.get(i).to.equalsIgnoreCase("") ||
+                msg.get(i).from.equalsIgnoreCase(clientName)) && !msg.get(i).isFile ) {
 
                 msg.get(i).writeToStream(os);
+            } else if ( (msg.get(i).to.equalsIgnoreCase(clientName) || msg.get(i).to.equalsIgnoreCase("")) &&
+                        msg.get(i).isFile ) {
+                if (fileReceiveRequest(msg.get(i).from, msg.get(i).fileTypeAndName, os, is)) {
+                    msg.get(i).writeToStream(os);
+                }
             }
         }
 		pos = msg.size();
 	}
+
+    private boolean fileReceiveRequest(String from, String fileTypeAndName, OutputStream os, InputStream is) {
+        try {
+            Message request = new Message();
+            request.date = new Date(System.currentTimeMillis());
+            request.from = "SERVER";
+            request.to = clientName;
+            request.text = "User '" + from + "' sent you file '" + fileTypeAndName + "'. To accept it reply 'y', " +
+                    "to ignore reply anything else";
+            request.writeToStream(os);
+
+            while (is.available() < 1) {
+                Thread.sleep(100);
+            }
+            Message reply = Message.readFromStream(is);
+            if (reply.text.equalsIgnoreCase("y")) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
 	
 	public void run() {
 		try {
@@ -42,7 +73,7 @@ public class ClientThread extends Thread {
 			
 			while ( ! isInterrupted()) {
 				if (pos < msg.size())
-					listToBytes(os);
+					listToBytes(os, is);
 				
 				Message m = Message.readFromStream(is);
 				if (m != null) {
