@@ -46,21 +46,17 @@ public class Main {
 	private static void fileMessageReceive(Message msg, Scanner scanner) {
 		System.out.println(msg + msg.fileTypeAndName);
 		System.out.print("Type in location for saving file: ");
-		Scanner scanner1 = new Scanner(System.in);
-		String path = scanner1.nextLine();
+		String path = scanner.nextLine();
 		try {
 			File file = new File(path);
 			if (!file.exists()) {
 				file.mkdirs();
 			}
-			file = new File(path + "\\" + msg.fileTypeAndName);
-			file.createNewFile();
 
 			RandomAccessFile randomAccessFile = new RandomAccessFile(path + "\\" + msg.fileTypeAndName, "rw");
 			randomAccessFile.write(msg.fileBytes);
 			randomAccessFile.close();
 			System.out.println("File saved!");
-            scanner1.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
