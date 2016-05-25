@@ -5,9 +5,11 @@ import java.util.ArrayList;
 
 class ClientReceiving extends Thread {
     private ArrayList<Socket> clients;
+    private ClientConnecting clientConnecting;
 
-    ClientReceiving(ArrayList<Socket> clients) {
+    ClientReceiving(ArrayList<Socket> clients, ClientConnecting clientConnecting) {
         this.clients = clients;
+        this.clientConnecting = clientConnecting;
     }
 
     public void run() {
@@ -18,6 +20,8 @@ class ClientReceiving extends Thread {
                         Message message = Message.readFromStream(socket.getInputStream());
                         if (!message.isTechInfoMessage()) {
                             System.out.println(message.toString());
+                        } else {
+                            clientConnecting.addClients(message.getClients());
                         }
                     }
                 } catch (Exception e) {

@@ -7,28 +7,28 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 class ClientConnecting extends Thread {
-    private ArrayList<Socket> clients;
-    private ArrayList<InetAddress> clientsForMessage;
+    private ArrayList<Socket> clientsSocket;
+    private ArrayList<InetAddress> clientsAdress;
     private boolean startStandalone;
     private int port;
     private String connectTo;
     private ClientReceiving clientReceiving;
 
     ClientConnecting(boolean startStandalone, int port) {
-        this.clients = new ArrayList<>();
-        this.clientsForMessage = new ArrayList<>();
+        this.clientsSocket = new ArrayList<>();
+        this.clientsAdress = new ArrayList<>();
         this.startStandalone = startStandalone;
         this.port = port;
-        this.clientReceiving = new ClientReceiving(clients);
+        this.clientReceiving = new ClientReceiving(clientsSocket, this);
     }
 
     ClientConnecting(boolean startStandalone, int port, String connectTo) {
-        this.clients = new ArrayList<>();
-        this.clientsForMessage = new ArrayList<>();
+        this.clientsSocket = new ArrayList<>();
+        this.clientsAdress = new ArrayList<>();
         this.startStandalone = startStandalone;
         this.port = port;
         this.connectTo = connectTo;
-        this.clientReceiving = new ClientReceiving(clients);
+        this.clientReceiving = new ClientReceiving(clientsSocket, this);
     }
 
     public void run() {
@@ -46,12 +46,12 @@ class ClientConnecting extends Thread {
             ServerSocket serverSocket = new ServerSocket(port);
             while (!isInterrupted()) {
                 Socket socket = serverSocket.accept();
-                if (!clientsForMessage.contains(socket.getInetAddress())) {
-                    clients.add(socket);
-                    clientsForMessage.add(socket.getInetAddress());
+                if (!clientsAdress.contains(socket.getInetAddress())) {
+                    clientsSocket.add(socket);
+                    clientsAdress.add(socket.getInetAddress());
                     sendClientsList();
                 }
-                System.out.println("[SYSTEM MESSAGE] " + clients.size() + " users available");
+                System.out.println("[SYSTEM MESSAGE] " + clientsSocket.size() + " users available");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,38 +69,50 @@ class ClientConnecting extends Thread {
             if (message.isTechInfoMessage()) {
                 for (InetAddress inetAddress : message.getClients()) {
                     Socket newSocket = new Socket(inetAddress, port);
-                    if (!clientsForMessage.contains(newSocket.getInetAddress())) {
-                        clients.add(newSocket);
-                        clientsForMessage.add(inetAddress);
+                    if (!clientsAdress.contains(newSocket.getInetAddress())) {
+                        clientsSocket.add(newSocket);
+                        clientsAdress.add(inetAddress);
                     }
                 }
             }
-            System.out.println("[SYSTEM MESSAGE] " + clients.size() + " users available");
+            System.out.println("[SYSTEM MESSAGE] " + clientsSocket.size() + " users available");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void addClients(ArrayList<InetAddress> newClients) {
+        for (InetAddress inetAddress : newClients) {
+            if (!clientsAdress.contains(inetAddress)) {
+                try {
+                    Socket socket = new Socket(inetAddress, port);
+                    clientsSocket.add(socket);
+                    clientsAdress.add(inetAddress);
+                } catch (IOException e) {}
+            }
         }
     }
 
     private void sendClientsList() {
         Message message = new Message();
         message.setTechInfoMessage(true);
-        message.setClients(clientsForMessage);
+        message.setClients(clientsAdress);
         sendMessage(message);
     }
 
     public void sendMessage(Message message) {
-        for (Socket socket : clients) {
+        for (Socket socket : clientsSocket) {
             try {
                 message.writeToStream(socket.getOutputStream());
             } catch (IOException e) {
                 e.printStackTrace();
-                clientsForMessage.remove(socket.getInetAddress());
-                clients.remove(socket);
+                clientsAdress.remove(socket.getInetAddress());
+                clientsSocket.remove(socket);
             }
         }
     }
 
     public ArrayList<Socket> getClients() {
-        return clients;
+        return clientsSocket;
     }
 }
